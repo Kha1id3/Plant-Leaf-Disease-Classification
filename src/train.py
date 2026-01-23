@@ -109,10 +109,10 @@ def train_one(config):
    
     scaler = torch.amp.GradScaler("cuda", enabled=(device.type == "cuda" and config.amp)) if device.type == "cuda" else None
 
-    # consistent classes
+  
     classes, class_to_idx = classes_from_any_csv([config.train_csv, config.val_csv])
 
-    # datasets
+ 
     ds_train = ImageCsvDataset(config.train_csv, class_to_idx, transform=build_transforms(train=True))
     ds_val   = ImageCsvDataset(config.val_csv,   class_to_idx, transform=build_transforms(train=False))
 
@@ -137,13 +137,13 @@ def train_one(config):
         prefetch_factor=(config.prefetch if pw else None),
     )
 
-    # model
+
     model, tag = build_model(config.backbone, num_classes=len(classes), pretrained=config.pretrained)
     model = model.to(device)
     if device.type == "cuda" and config.channels_last:
         model = model.to(memory_format=torch.channels_last)
 
-    # criterion
+   
     if config.class_weight:
         weights = compute_class_weights(config.train_csv, class_to_idx).to(device)
         criterion = nn.CrossEntropyLoss(weight=weights)
@@ -154,7 +154,7 @@ def train_one(config):
     lr = config.lr_tl if config.pretrained else config.lr_scratch
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
-    # warmup head-only for TL
+    
     head_only_epochs = config.warmup_head_epochs if config.pretrained else 0
     if head_only_epochs > 0:
         for p in model.parameters():
@@ -174,7 +174,7 @@ def train_one(config):
     since_best = 0
 
     for epoch in range(1, max_epochs + 1):
-        # unfreeze after warmup for TL
+      
         if config.pretrained and epoch == head_only_epochs + 1:
             for p in model.parameters():
                 p.requires_grad = True
@@ -212,7 +212,7 @@ def train_one(config):
                 print("Early stopping.")
                 break
 
-    # save artifacts
+   
     outdir = Path(config.outdir)
     outdir.mkdir(parents=True, exist_ok=True)
     run_tag = f"{tag}_seed{config.seed}"
@@ -250,7 +250,7 @@ def parse_args():
     ap.add_argument("--patience", type=int, default=5)
     ap.add_argument("--class_weight", action="store_true")
 
-    # Speed/throughput flags
+   
     ap.add_argument("--amp", action="store_true", help="Mixed precision (CUDA only)")
     ap.add_argument("--channels_last", action="store_true", help="Use channels_last memory format (CUDA only)")
     ap.add_argument("--prefetch", type=int, default=2, help="DataLoader prefetch_factor (requires workers>0)")

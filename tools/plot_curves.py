@@ -10,7 +10,7 @@ def main():
 
     df = pd.read_csv(args.history_csv)
 
-    # Plot F1
+    
     plt.figure(figsize=(7,4))
     plt.plot(df["epoch"], df["train_f1"], label="train F1")
     plt.plot(df["epoch"], df["val_f1"],   label="val F1")
@@ -20,7 +20,7 @@ def main():
     plt.savefig(f1_png, dpi=200)
     print("Saved:", f1_png)
 
-    # Plot loss
+   
     plt.figure(figsize=(7,4))
     plt.plot(df["epoch"], df["train_loss"], label="train loss")
     plt.plot(df["epoch"], df["val_loss"],   label="val loss")

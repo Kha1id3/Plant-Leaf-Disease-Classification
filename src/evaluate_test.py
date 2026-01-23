@@ -45,7 +45,7 @@ def main():
     tmp_csv = outdir / "_tmp_test.csv"
     df_test.to_csv(tmp_csv, index=False)
 
-    # classes order: try checkpoint first for exact mapping, else derive from csv
+   
     ckpt = torch.load(args.ckpt, map_location="cpu")
     if isinstance(ckpt, dict) and "classes" in ckpt and ckpt["classes"] is not None:
         classes = ckpt["classes"]

@@ -6,7 +6,7 @@ import pandas as pd
 TAGS = ["resnet18_tl","resnet18_scratch","effnet_b0_tl","effnet_b0_scratch"]
 
 def read_summary(p):
-    # lines: acc=..., macroF1=..., precision=..., recall=...
+    
     d = {}
     with open(p, "r") as f:
         for line in f:
@@ -42,7 +42,7 @@ def main():
     out = Path(args.out_csv); out.parent.mkdir(parents=True, exist_ok=True)
     long_df.to_csv(out, index=False)
 
-    # also write a wide format with F1 columns for stats_tests
+    
     wide = long_df.pivot(index="seed", columns="tag", values="macroF1")
     wide.columns = [f"f1_{c}" for c in wide.columns]
     wide.reset_index().to_csv(out.parent/"scores_by_seed_wide.csv", index=False)
